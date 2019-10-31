@@ -53,3 +53,45 @@ const followersArray = [];
   luishrd
   bigknell
 */
+// axios.get("https://api.github.com/users/dtauraso/followers")
+//   .then(response => {
+//     response.data.forEach(object => {
+//       console.log(object);
+
+//     })
+// })
+
+axios.get("https://api.github.com/users/dtauraso")
+  .then(response => {
+    console.log(response.data);
+
+  })
+
+function makeCard(cardObject) {
+
+  let image = cardObject.avatar_url
+  let name = cardObject.name
+  let userName = cardObject.login
+  // might be null
+  let location = cardObject.location
+
+  let profile = cardObject.html_url
+
+  // could be null?  maybe 0
+  let followersCount = cardObject.followers
+  let followingCount = cardObject.following
+
+  // could be null
+  let bio = cardObject.bio
+
+  // define the tags
+  let card = document.createElement("div")
+  let image = document.createElement("img")
+  let cardInfo = document.createElement("div")
+  // make the structure
+
+  // add the classes
+
+  // fill the data
+  
+}
