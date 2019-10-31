@@ -53,29 +53,17 @@ const followersArray = [];
   luishrd
   bigknell
 */
-// axios.get("https://api.github.com/users/dtauraso/followers")
-//   .then(response => {
-//     response.data.forEach(object => {
-//       console.log(object);
 
-//     })
-// })
-
-axios.get("https://api.github.com/users/dtauraso")
-  .then(response => {
-    console.log(response.data);
-
-  })
 
 function makeCard(cardObject) {
 
-  let image = cardObject.avatar_url
+  let imageUrl = cardObject.avatar_url
   let name = cardObject.name
   let userName = cardObject.login
   // might be null
   let location = cardObject.location
 
-  let profile = cardObject.html_url
+  let profileUrl = cardObject.html_url
 
   // could be null?  maybe 0
   let followersCount = cardObject.followers
@@ -88,10 +76,121 @@ function makeCard(cardObject) {
   let card = document.createElement("div")
   let image = document.createElement("img")
   let cardInfo = document.createElement("div")
+  let header3 = document.createElement("h3")
+  let usernameParagraph = document.createElement("p")
+  let locationParagraph = document.createElement("p")
+  let profileParagraph = document.createElement("p");
+  profileParagraph.textContent = "Profile:  ";
+
+  let gitProfileLink = document.createElement("a");
+  gitProfileLink.setAttribute("href", profileUrl);
+
+  gitProfileLink.textContent = profileUrl;
+  profileParagraph.append(gitProfileLink);
+
+
+
+  let followersCountParagraph = document.createElement("p")
+  let followingCountParagraph = document.createElement("p")
+  let bioParagraph = document.createElement("p")
+
   // make the structure
 
+
+  // don't useappend for debugging
+  card.append(image, cardInfo)
+  cardInfo.append(header3,
+                  usernameParagraph,
+                  locationParagraph,
+                  profileParagraph,
+                  followersCountParagraph,
+                  followingCountParagraph,
+                  bioParagraph)
+
   // add the classes
+  card.classList.add("card")
+  cardInfo.classList.add("card-info")
+  header3.classList.add("name")
+  usernameParagraph.classList.add("username")
 
   // fill the data
+  image.setAttribute("src", imageUrl)
+  header3.textContent = name
+  usernameParagraph.textContent = userName
+  if(location === null) {
+    locationParagraph.textContent = `Location: Knowhere`
+
+  } else {
+    locationParagraph.textContent = `Location: ${location}`
+
+  }
+  followersCountParagraph.textContent = `Followers: ${String(followersCount)}`
+  followingCountParagraph.textContent = `Following: ${String(followingCount)}`
+
+  if(bio === null) {
+    bioParagraph.textContent = `Bio: Originated from Mars`
+
+  } else {
+    bioParagraph.textContent = `Bio: ${bio}`
+
+  }
+
+  return card
   
 }
+
+// axios.get("https://api.github.com/users/dtauraso/followers")
+//   .then(response => {
+//     response.data.forEach(object => {
+//       console.log(object);
+
+//     })
+// })
+
+// axios.get("https://api.github.com/users/dtauraso")
+//   .then(response => {
+//     console.log(response.data);
+
+//   })
+
+let cardsSelector = document.querySelector(".cards")
+
+axios.get("https://api.github.com/users/dtauraso")
+  .then(response => {
+    let myCard = makeCard(response.data)
+    console.log(myCard)
+    cardsSelector.appendChild(myCard)
+    // console.log(response.data);
+    
+    // collect my followers
+
+    // run a forEach get.then for each follower
+  })
+  .catch(error => {
+
+    console.log("there was no data to get", error)
+  })
+
+  // stretch goal by getting the followers directly from the github api
+  axios.get("https://api.github.com/users/dtauraso/followers")
+  .then(response => {
+    
+    response.data.forEach(object => {
+      // console.log(object.login);
+      axios.get(`https://api.github.com/users/${object.login}`)
+      .then(response => {
+        // console.log(response.data)
+        let myCard = makeCard(response.data)
+        cardsSelector.appendChild(myCard)
+          })
+      .catch(error => {
+
+        console.log("there was no data to get", error)
+      })
+
+    })
+})
+.catch(error => {
+
+  console.log("there was no data to get", error)
+})
