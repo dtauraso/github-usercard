@@ -169,32 +169,35 @@ axios.get("https://api.github.com/users/dtauraso")
     })
     .then(response => {
       // stretch goal by getting the followers directly from the github api right after my card has been presented
-      axios.get("https://api.github.com/users/dtauraso/followers")
-            .then(response => {
-              
-              response.data.forEach(object => {
-                // console.log(object.login);
-                axios.get(`https://api.github.com/users/${object.login}`)
-                .then(response => {
-                  // console.log(response.data)
-                  let myCard = makeCard(response.data)
-                  cardsSelector.appendChild(myCard)
-                    })
-                .catch(error => {
-
-                  console.log("there was no data to get", error)
-                })
-
-              })
-            })
-            .catch(error => {
-
-            console.log("there was no data to get", error)
-            })
+      getFolowers("dtauraso");
+      
     })
     .catch(error => {
 
       console.log("there was no data to get", error)
     })
 
-  
+function getFolowers(userName) {
+    axios.get(`https://api.github.com/users/${userName}/followers`)
+    .then(response => {
+      
+      response.data.forEach(object => {
+        // console.log(object.login);
+        axios.get(`https://api.github.com/users/${object.login}`)
+        .then(response => {
+          // console.log(response.data)
+          let myCard = makeCard(response.data)
+          cardsSelector.appendChild(myCard)
+            })
+        .catch(error => {
+
+          console.log("there was no data to get", error)
+        })
+
+      })
+    })
+    .catch(error => {
+
+    console.log("there was no data to get", error)
+    })
+}
