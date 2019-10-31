@@ -156,41 +156,45 @@ function makeCard(cardObject) {
 let cardsSelector = document.querySelector(".cards")
 
 axios.get("https://api.github.com/users/dtauraso")
-  .then(response => {
-    let myCard = makeCard(response.data)
-    console.log(myCard)
-    cardsSelector.appendChild(myCard)
-    // console.log(response.data);
-    
-    // collect my followers
+    .then(response => {
+      let myCard = makeCard(response.data)
+      console.log(myCard)
+      cardsSelector.appendChild(myCard)
+      // console.log(response.data);
+      
+      // collect my followers
 
-    // run a forEach get.then for each follower
-  })
-  .catch(error => {
-
-    console.log("there was no data to get", error)
-  })
-
-  // stretch goal by getting the followers directly from the github api
-  axios.get("https://api.github.com/users/dtauraso/followers")
-  .then(response => {
-    
-    response.data.forEach(object => {
-      // console.log(object.login);
-      axios.get(`https://api.github.com/users/${object.login}`)
-      .then(response => {
-        // console.log(response.data)
-        let myCard = makeCard(response.data)
-        cardsSelector.appendChild(myCard)
-          })
-      .catch(error => {
-
-        console.log("there was no data to get", error)
-      })
-
+      // run a forEach get.then for each follower
+      return response
     })
-})
-.catch(error => {
+    .then(response => {
+      // stretch goal by getting the followers directly from the github api right after my card has been presented
+      axios.get("https://api.github.com/users/dtauraso/followers")
+            .then(response => {
+              
+              response.data.forEach(object => {
+                // console.log(object.login);
+                axios.get(`https://api.github.com/users/${object.login}`)
+                .then(response => {
+                  // console.log(response.data)
+                  let myCard = makeCard(response.data)
+                  cardsSelector.appendChild(myCard)
+                    })
+                .catch(error => {
 
-  console.log("there was no data to get", error)
-})
+                  console.log("there was no data to get", error)
+                })
+
+              })
+            })
+            .catch(error => {
+
+            console.log("there was no data to get", error)
+            })
+    })
+    .catch(error => {
+
+      console.log("there was no data to get", error)
+    })
+
+  
