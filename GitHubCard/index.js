@@ -80,13 +80,14 @@ function makeCard(cardObject) {
   let usernameParagraph = document.createElement("p")
   let locationParagraph = document.createElement("p")
   let profileParagraph = document.createElement("p");
+  // needed here so it doesn't overwrite the nested "a" tag
   profileParagraph.textContent = "Profile:  ";
 
   let gitProfileLink = document.createElement("a");
-  gitProfileLink.setAttribute("href", profileUrl);
+  gitProfileLink.href = profileUrl;
 
   gitProfileLink.textContent = profileUrl;
-  profileParagraph.append(gitProfileLink);
+  profileParagraph.appendChild(gitProfileLink);
 
 
 
@@ -160,24 +161,22 @@ axios.get("https://api.github.com/users/dtauraso")
       let myCard = makeCard(response.data)
       console.log(myCard)
       cardsSelector.appendChild(myCard)
-      // console.log(response.data);
+      console.log(response.data);
       
       // collect my followers
+      // stretch goal by getting the followers directly from the github api right after my card has been presented
+
+      getFollowers("dtauraso");
 
       // run a forEach get.then for each follower
-      return response
-    })
-    .then(response => {
-      // stretch goal by getting the followers directly from the github api right after my card has been presented
-      getFolowers("dtauraso");
-      
+      // return response
     })
     .catch(error => {
 
-      console.log("there was no data to get", error)
+      console.log(error.message)
     })
 
-function getFolowers(userName) {
+function getFollowers(userName) {
     axios.get(`https://api.github.com/users/${userName}/followers`)
     .then(response => {
       
@@ -191,13 +190,13 @@ function getFolowers(userName) {
             })
         .catch(error => {
 
-          console.log("there was no data to get", error)
+          console.log(error.message)
         })
 
       })
     })
     .catch(error => {
 
-    console.log("there was no data to get", error)
+    console.log(error.message)
     })
 }
