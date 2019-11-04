@@ -53,3 +53,150 @@ const followersArray = [];
   luishrd
   bigknell
 */
+
+
+function makeCard(cardObject) {
+
+  let imageUrl = cardObject.avatar_url
+  let name = cardObject.name
+  let userName = cardObject.login
+  // might be null
+  let location = cardObject.location
+
+  let profileUrl = cardObject.html_url
+
+  // could be null?  maybe 0
+  let followersCount = cardObject.followers
+  let followingCount = cardObject.following
+
+  // could be null
+  let bio = cardObject.bio
+
+  // define the tags
+  let card = document.createElement("div")
+  let image = document.createElement("img")
+  let cardInfo = document.createElement("div")
+  let header3 = document.createElement("h3")
+  let usernameParagraph = document.createElement("p")
+  let locationParagraph = document.createElement("p")
+  let profileParagraph = document.createElement("p");
+  // needed here so it doesn't overwrite the nested "a" tag
+  profileParagraph.textContent = "Profile:  ";
+
+  let gitProfileLink = document.createElement("a");
+  gitProfileLink.href = profileUrl;
+
+  gitProfileLink.textContent = profileUrl;
+  profileParagraph.appendChild(gitProfileLink);
+
+
+
+  let followersCountParagraph = document.createElement("p")
+  let followingCountParagraph = document.createElement("p")
+  let bioParagraph = document.createElement("p")
+
+  // make the structure
+
+
+  // don't useappend for debugging
+  card.append(image, cardInfo)
+  cardInfo.append(header3,
+                  usernameParagraph,
+                  locationParagraph,
+                  profileParagraph,
+                  followersCountParagraph,
+                  followingCountParagraph,
+                  bioParagraph)
+
+  // add the classes
+  card.classList.add("card")
+  cardInfo.classList.add("card-info")
+  header3.classList.add("name")
+  usernameParagraph.classList.add("username")
+
+  // fill the data
+  image.setAttribute("src", imageUrl)
+  header3.textContent = name
+  usernameParagraph.textContent = userName
+  if(location === null) {
+    locationParagraph.textContent = `Location: Knowhere`
+
+  } else {
+    locationParagraph.textContent = `Location: ${location}`
+
+  }
+  followersCountParagraph.textContent = `Followers: ${String(followersCount)}`
+  followingCountParagraph.textContent = `Following: ${String(followingCount)}`
+
+  if(bio === null) {
+    bioParagraph.textContent = `Bio: Originated from Mars`
+
+  } else {
+    bioParagraph.textContent = `Bio: ${bio}`
+
+  }
+
+  return card
+  
+}
+
+// axios.get("https://api.github.com/users/dtauraso/followers")
+//   .then(response => {
+//     response.data.forEach(object => {
+//       console.log(object);
+
+//     })
+// })
+
+// axios.get("https://api.github.com/users/dtauraso")
+//   .then(response => {
+//     console.log(response.data);
+
+//   })
+
+let cardsSelector = document.querySelector(".cards")
+
+axios.get("https://api.github.com/users/dtauraso")
+    .then(response => {
+      let myCard = makeCard(response.data)
+      console.log(myCard)
+      cardsSelector.appendChild(myCard)
+      console.log(response.data);
+      
+      // collect my followers
+      // stretch goal by getting the followers directly from the github api right after my card has been presented
+
+      getFollowers("dtauraso");
+
+      // run a forEach get.then for each follower
+      // return response
+    })
+    .catch(error => {
+
+      console.log(error.message)
+    })
+
+function getFollowers(userName) {
+    axios.get(`https://api.github.com/users/${userName}/followers`)
+    .then(response => {
+      
+      response.data.forEach(object => {
+        // console.log(object.login);
+        axios.get(`https://api.github.com/users/${object.login}`)
+        .then(response => {
+          // console.log(response.data)
+          let myCard = makeCard(response.data)
+          cardsSelector.appendChild(myCard)
+            })
+        .catch(error => {
+
+          console.log(error.message)
+        })
+
+      })
+    })
+    .catch(error => {
+
+    console.log(error.message)
+    })
+}
